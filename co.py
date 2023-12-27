@@ -16,12 +16,6 @@ scaler = StandardScaler()
 scaler.fit(data)  
 data = scaler.transform(data) 
 
-'''Before the clustering I applied PCA to reduce the data size
-I made an iteration process to determine the best number of Principal 
-Components to select so that we do not lose relevant information about the data
-I set a threshold of 95% of captured information so we lose less than 5% of 
-the original information
-'''
 # Iteration process to select the number of Principal components
 m=data.shape[1]
 n=0
@@ -41,11 +35,6 @@ print('Percentage of information captured with',n,'principal components: {:.1f}%
 # Reduce data to the number of principal components selected before
 data_reduced=model.transform(data) 
 
-'''With the reduced data I apply the Kmeans clustering, for this I 
-also applied an iteration process so I can select the best number of
-clusters for the model. I try 2 to K clusters and in each iteration 
-I calculate different meas
-'''
 
 #Iteration process to select the number of clusters
 
@@ -64,6 +53,9 @@ for i in range(2,k):
     sil.append(silhouette_score(data_reduced,kmeans.labels_))
     dav.append(davies_bouldin_score(data_reduced,kmeans.labels_))
     cal.append(calinski_harabasz_score(data_reduced,kmeans.labels_))
+
+
+# Plotting the results to analyze and select the best number of clusters 
 
 clusters=np.linspace(2,k,k-2) #vector with the number of clusters in each iteration
 
@@ -88,8 +80,10 @@ plt.title("Calinski score")
 plt.xlabel("Number of clusters")
 plt.show()
 
+K=4 #According to the plots this is the best number of clusters
+
 # Fit data with the number of clusters selected and calculate the final scores
-kmeans = KMeans(n_clusters=4, random_state=0, n_init="auto").fit(data_reduced)
+kmeans = KMeans(n_clusters=K, random_state=0, n_init="auto").fit(data_reduced)
 sil_final = silhouette_score(data_reduced,kmeans.labels_)
 dav_final = davies_bouldin_score(data_reduced,kmeans.labels_)
 cal_final = calinski_harabasz_score(data_reduced,kmeans.labels_)
